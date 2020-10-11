@@ -15,7 +15,7 @@ openwrt-imagebuilder-ath79-generic.Linux-x86_64:
 	curl ${CURL_OPTS} -L -O "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/heads/master;a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c"
 	curl ${CURL_OPTS} -L -O "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/heads/master;a=blob_plain;f=tools/firmware-utils/src/md5.h"
 	patch -p0 < tplink-safeloader.patch
-	gcc -Wall -lcrypto -lssl -o openwrt-imagebuilder-ath79-generic.Linux-x86_64/staging_dir/host/bin/tplink-safeloader tplink-safeloader.c
+	gcc -Wall -o openwrt-imagebuilder-ath79-generic.Linux-x86_64/staging_dir/host/bin/tplink-safeloader tplink-safeloader.c -lcrypto -lssl
 
 
 images: openwrt-imagebuilder-ath79-generic.Linux-x86_64
