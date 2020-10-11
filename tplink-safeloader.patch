@@ -1,0 +1,23 @@
+--- tplink-safeloader.c.old
++++ tplink-safeloader.c
+@@ -1446,8 +1446,9 @@
+ 		.id     = "TL-WPA8630P-V2.0-EU",
+ 		.vendor = "",
+ 		.support_list =
+ 			"SupportList:\n"
++			"{product_name:TL-WPA8630,product_ver:2.0.0,special_id:45550000}\n"	/* TL-WPA8630(EU) v2.0: Only use on stock version 2.0.2 Build 20171017 Rel.43480 */
+ 			"{product_name:TL-WPA8630P,product_ver:2.0.0,special_id:45550000}\n",
+ 		.support_trail = '\x00',
+ 		.soft_ver = NULL,
+ 
+@@ -1481,8 +1482,10 @@
+ 		.id     = "TL-WPA8630P-V2-INT",
+ 		.vendor = "",
+ 		.support_list =
+ 			"SupportList:\n"
++			"{product_name:TL-WPA8630,product_ver:2.0.0,special_id:43410000}\n"	/* TL-WPA8630(CA) v2.0: Only use on stock version 2.0.1 Build 20171107 Rel.62737 */
++			"{product_name:TL-WPA8630,product_ver:2.0.0,special_id:55530000}\n"	/* TL-WPA8630(US) v2.0: Only use on stock version 2.0.1 Build 20171011 Rel.33916 */
+ 			"{product_name:TL-WPA8630P,product_ver:2.0.0,special_id:41550000}\n"
+ 			"{product_name:TL-WPA8630P,product_ver:2.0.0,special_id:44450000}\n"
+ 			"{product_name:TL-WPA8630P,product_ver:2.1.0,special_id:41550000}\n",
+ 		.support_trail = '\x00',
