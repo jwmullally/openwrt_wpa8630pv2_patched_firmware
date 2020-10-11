@@ -23,6 +23,7 @@ images: openwrt-imagebuilder-ath79-generic.Linux-x86_64
 		make image PROFILE="tplink_tl-wpa8630p-v2.0-eu" EXTRA_IMAGE_NAME="patch" PACKAGES="procd iw luci"
 	cd openwrt-imagebuilder-ath79-generic.Linux-x86_64 && \
 		make image PROFILE="tplink_tl-wpa8630p-v2-int" EXTRA_IMAGE_NAME="patch" PACKAGES="procd iw luci"
+	cat openwrt-imagebuilder-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/sha256sums 
 
 
 clean:
