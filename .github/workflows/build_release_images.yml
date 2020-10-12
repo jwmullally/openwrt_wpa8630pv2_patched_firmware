@@ -10,18 +10,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install dependencies
-        run: sudo apt-get install libssl-dev
       - name: Build firmware images
         run: 'make images CURL_OPTS="-s"'
-      - uses: octokit/request-action@v2.x
+      - name: Delete old release assets
+        uses: mknejp/delete-release-assets@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v1.0
+          assets: "*"
+      - name: Get latest release
+        uses: octokit/request-action@v2.x
         id: get_latest_release
         with:
           route: GET /repos/:repository/releases/latest
           repository: ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload Release Asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -30,7 +35,7 @@ jobs:
           asset_path: ./openwrt-imagebuilder-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin
           asset_name: openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin
           asset_content_type: application/octet-stream
-      - name: Upload Release Asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,7 +44,7 @@ jobs:
           asset_path: ./openwrt-imagebuilder-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu.manifest
           asset_name: openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu.manifest
           asset_content_type: text/plain
-      - name: Upload Release Asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -48,7 +53,7 @@ jobs:
           asset_path: ./openwrt-imagebuilder-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin
           asset_name: openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin
           asset_content_type: application/octet-stream
-      - name: Upload Release Asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,7 +62,7 @@ jobs:
           asset_path: ./openwrt-imagebuilder-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int.manifest
           asset_name: openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int.manifest
           asset_content_type: text/plain
-      - name: Upload Release Asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -37,8 +37,6 @@ See the [release](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmw
 
 These are built daily from the OpenWRT snapshot builds using [this Github workflow](./.github/workflows/build_release_images.yml). You can see the build logs [here](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/actions?query=workflow%3ABuild-Release-Images).
 
-TODO: Fix release asset replacement
-
 
 ## Installing
 
