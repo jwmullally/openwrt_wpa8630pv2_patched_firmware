@@ -16,7 +16,8 @@ jobs:
         uses: mknejp/delete-release-assets@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v1.0
+          tag: snapshot
+          fail-if-no-assets: false
           assets: "*"
       - name: Get latest release
         uses: octokit/request-action@v2.x

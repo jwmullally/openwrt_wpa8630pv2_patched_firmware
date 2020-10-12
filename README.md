@@ -13,13 +13,13 @@ These firmwares are built using the OpenWRT Snapshot release. When stable versio
 
 | Hardware Version | Stock Firmware Version | Patched OpenWRT Firmware |
 | --- | --- | --- |
-| `Model: TL-WPA8630(CA) Ver: 2.0` | `2.0.1 Build 20171107 Rel.62737` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/v1.0/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin) |
-| `Model: TL-WPA8630(US) Ver: 2.0` | `2.0.1 Build 20171011 Rel.33916` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/v1.0/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin) |
-| `Model: TL-WPA8630(EU) Ver: 2.0` | `2.0.2 Build 20171017 Rel.43480` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/v1.0/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin) |
+| `Model: TL-WPA8630(CA) Ver: 2.0` | `2.0.1 Build 20171107 Rel.62737` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/snapshot/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin) |
+| `Model: TL-WPA8630(US) Ver: 2.0` | `2.0.1 Build 20171011 Rel.33916` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/snapshot/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin) |
+| `Model: TL-WPA8630(EU) Ver: 2.0` | `2.0.2 Build 20171017 Rel.43480` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/snapshot/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin) |
 
 **!!! ONLY INSTALL THESE FIRMWARES IF YOUR CURRENT HARDWARE AND FIRMWARE VERSIONS EXACTLY MATCHES THE ENTRY IN THIS TABLE !!!**
 
-If your device is running a different firmware version than those listed below, installing these firmwares will prevent your device from booting and turn it into a [brick](https://en.wikipedia.org/wiki/%28electronics%29). This is because the bootloader in the newer versions of the stock firmwares load the kernal and filesystem from a different memory location. It will not be recoverable without physically opening the device (which should not be attempted as it contains hazardous 110-230V voltages) and writing directly to the flash memory chip with a flash programmer. So only install this firmware on your device if its a complete match! For support for other versions, ask in the [OpenWRT forum](https://forum.openwrt.org/).
+If your device is running a different firmware version than those listed below, installing these firmwares will prevent your device from booting and turn it into a [brick](https://en.wikipedia.org/wiki/Brick_%28electronics%29). This is because the bootloader in the newer versions of the stock firmwares load the kernal and filesystem from a different memory location. It will not be recoverable without physically opening the device (which should not be attempted as it contains hazardous 110-230V voltages) and writing directly to the flash memory chip with a flash programmer. So only install this firmware on your device if its a complete match! For support for other versions, ask in the [OpenWRT forum](https://forum.openwrt.org/).
 
 Where to find this information:
 
@@ -33,14 +33,14 @@ Where to find this information:
 
 ## Download firmware
 
-See the [release](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/tag/v1.0) for links to the firmware images.
+See the [release](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/tag/snapshot) for links to the firmware images.
 
 These are built daily from the OpenWRT snapshot builds using [this Github workflow](./.github/workflows/build_release_images.yml). You can see the build logs [here](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/actions?query=workflow%3ABuild-Release-Images).
 
 
 ## Installing
 
-Choose the correct file from the table above and follow the (standard installation instructions)[https://openwrt.org/toh/tp-link/tp-link_tl-wpa8630p_v2#oem_easy_installation]
+Choose the correct file from the table above and follow the [standard installation instructions](https://openwrt.org/toh/tp-link/tp-link_tl-wpa8630p_v2#oem_easy_installation).
 
 If you get "Wrong file" message during firmware upgrade, try renaming the file to something shorter like `openwrt-firmware.bin`.
 
