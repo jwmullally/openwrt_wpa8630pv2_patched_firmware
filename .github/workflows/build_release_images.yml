@@ -1,8 +1,6 @@
 name: Build-Release-Images
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: "0 13 * * *"
 jobs:
   build-release-images:
     name: Build and Release Firmware Images

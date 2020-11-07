@@ -35,7 +35,7 @@ Where to find this information:
 
 See the [release](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/tag/snapshot) for links to the firmware images.
 
-These are built daily from the OpenWRT snapshot builds using [this Github workflow](./.github/workflows/build_release_images.yml). You can see the build logs [here](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/actions?query=workflow%3ABuild-Release-Images).
+These are built from the OpenWRT snapshot builds using [this Github workflow](./.github/workflows/build_release_images.yml). You can see the build logs [here](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/actions?query=workflow%3ABuild-Release-Images). These are [snapshot](https://openwrt.org/releases/snapshot) builds and may not work 100% correctly.
 
 
 ## Installing
