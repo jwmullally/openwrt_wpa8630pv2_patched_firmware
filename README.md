@@ -16,6 +16,7 @@ These firmwares are built using the OpenWRT Snapshot release. When stable versio
 | `Model: TL-WPA8630(CA) Ver: 2.0` | `2.0.1 Build 20171107 Rel.62737` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/snapshot/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin) |
 | `Model: TL-WPA8630(US) Ver: 2.0` | `2.0.1 Build 20171011 Rel.33916` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/snapshot/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin) |
 | `Model: TL-WPA8630(EU) Ver: 2.0` | `2.0.2 Build 20171017 Rel.43480` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/snapshot/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin) |
+| `Model: TL-WPA8630(EU) Ver: 2.1` | `2.1.0 Build 20171117 Rel.42724` | [`openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.1-eu-squashfs-factory.bin`](https://github.com/jwmullally/openwrt_wpa8630pv2_patched_firmware/releases/download/snapshot/openwrt-patch-ath79-generic-tplink_tl-wpa8630p-v2.1-eu-squashfs-factory.bin) |
 
 **!!! ONLY INSTALL THESE FIRMWARES IF YOUR CURRENT HARDWARE AND FIRMWARE VERSIONS EXACTLY MATCHES THE ENTRY IN THIS TABLE !!!**
 
