@@ -9,6 +9,11 @@ The only difference between these firmwares and the offical firmwares is the ext
 These firmwares are built using the OpenWRT Snapshot release. When stable versions are released for this device, this repo will be updated to include them.
 
 
+## Notes
+
+This device only has 6016k of usable memory (as the 8M flash includes a redundant copy of the PLC firmware). WolfSSL was recently made default to support WPA3 and 802.11s SAE, but it is too large to fit alongside LuCI, so these images swap back to MbedTLS. Also PPP is removed and some PLC utilities are added. If you want to change the selection of packages used, edit the Makefile and rebuild.
+
+
 ## Supported versions 
 
 | Hardware Version | Stock Firmware Version | Patched OpenWRT Firmware |
