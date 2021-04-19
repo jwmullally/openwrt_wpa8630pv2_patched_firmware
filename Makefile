@@ -10,33 +10,36 @@
 # default to support WPA3 and 802.11s SAE, but it is too large to fit
 # alongside LuCI, so swap back to Mbed TLS. Also remove PPP and add in
 # relevant PLC utilities.
-PACKAGES = procd iw luci -wpad-basic-wolfssl wpad-basic -libustream-wolfssl libustream-mbedtls -ppp -ppp-mod-pppoe luci-app-commands open-plc-utils-plctool open-plc-utils-plcrate open-plc-utils-hpavkeys
+PACKAGES = uhttpd luci-app-opkg luci-lib-px5g luci-theme-bootstrap luci-mod-admin-full luci-app-commands procd iw wpad-basic libustream-mbedtls px5g-mbedtls open-plc-utils-plctool open-plc-utils-plcrate open-plc-utils-hpavkeys 
+PACKAGES += -firewall -iptables -ip6tables -ppp -ppp-mod-pppoe -libustream-wolfssl -wpad-basic-wolfssl -odhcpd-ipv6only -odhcp6c -kmod-ipt-offload 
+
+VERSION = 21.02-SNAPSHOT
 
 all: images
 
 
-openwrt-imagebuilder-ath79-generic.Linux-x86_64:
-	curl ${CURL_OPTS} -C - -L -O https://downloads.openwrt.org/snapshots/targets/ath79/generic/openwrt-imagebuilder-ath79-generic.Linux-x86_64.tar.xz
-	tar -xf openwrt-imagebuilder-ath79-generic.Linux-x86_64.tar.xz
+openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64:
+	curl ${CURL_OPTS} -C - -L -O https://downloads.openwrt.org/releases/$(VERSION)/targets/ath79/generic/openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64.tar.xz
+	tar -xf openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64.tar.xz
 	curl ${CURL_OPTS} -L -O "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/heads/master;a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c"
 	curl ${CURL_OPTS} -L -O "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/heads/master;a=blob_plain;f=tools/firmware-utils/src/md5.h"
 	patch -p0 < tplink-safeloader.patch
-	gcc -Wall -o openwrt-imagebuilder-ath79-generic.Linux-x86_64/staging_dir/host/bin/tplink-safeloader tplink-safeloader.c -lcrypto -lssl
+	gcc -Wall -o openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64/staging_dir/host/bin/tplink-safeloader tplink-safeloader.c -lcrypto -lssl
 
 
-images: openwrt-imagebuilder-ath79-generic.Linux-x86_64
-	cd openwrt-imagebuilder-ath79-generic.Linux-x86_64 && \
-		make image PROFILE="tplink_tl-wpa8630p-v2.0-eu" EXTRA_IMAGE_NAME="patch" PACKAGES="${PACKAGES}"
-	cd openwrt-imagebuilder-ath79-generic.Linux-x86_64 && \
-		make image PROFILE="tplink_tl-wpa8630p-v2.1-eu" EXTRA_IMAGE_NAME="patch" PACKAGES="${PACKAGES}"
-	cd openwrt-imagebuilder-ath79-generic.Linux-x86_64 && \
+images: openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64
+	cd openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64 && \
+		make image PROFILE="tplink_tl-wpa8630p-v2.0-eu" EXTRA_IMAGE_NAME="patch" PACKAGES="${PACKAGES}" CONFIG_IPV6=n
+	cd openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64 && \
+		make image PROFILE="tplink_tl-wpa8630p-v2.1-eu" EXTRA_IMAGE_NAME="patch" PACKAGES="${PACKAGES}" CONFIG_IPV6=n
+	cd openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64 && \
 		make image PROFILE="tplink_tl-wpa8630p-v2-int" EXTRA_IMAGE_NAME="patch" PACKAGES="${PACKAGES}"
-	cat openwrt-imagebuilder-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/sha256sums 
-	ls -hs openwrt-imagebuilder-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/openwrt-patch-*-factory.bin
+	cat openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/sha256sums 
+	ls -hs openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64/bin/targets/ath79/generic/openwrt-*-patch-*-factory.bin
 
 
 clean:
-	rm -rf openwrt-imagebuilder-ath79-generic.Linux-x86_64
-	rm -f openwrt-imagebuilder-ath79-generic.Linux-x86_64.tar.xz
+	rm -rf openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64
+	rm -f openwrt-imagebuilder-$(VERSION)-ath79-generic.Linux-x86_64.tar.xz
 	rm -f md5.h
 	rm -f tplink-safeloader.c
