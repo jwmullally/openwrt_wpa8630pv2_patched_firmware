@@ -6,14 +6,12 @@
 # kernel is the same as the official builds, so all kmods from the 
 # standard repos are installable.
 
-# This device only has 6016k of usable memory. WolfSSL was recently made
-# default to support WPA3 and 802.11s SAE, but it is too large to fit
-# alongside LuCI, so swap back to Mbed TLS. Also remove PPP and add in
+# This device only has 6016k of usable memory. Remove PPP and add in
 # relevant PLC utilities.
-PACKAGES = uhttpd luci-app-opkg luci-lib-px5g luci-theme-bootstrap luci-mod-admin-full luci-app-commands procd iw wpad-basic libustream-mbedtls px5g-mbedtls open-plc-utils-plctool open-plc-utils-plcrate open-plc-utils-hpavkeys 
-PACKAGES += -firewall -iptables -ip6tables -ppp -ppp-mod-pppoe -libustream-wolfssl -wpad-basic-wolfssl -odhcpd-ipv6only -odhcp6c -kmod-ipt-offload 
+PACKAGES = luci luci-app-commands open-plc-utils-plctool open-plc-utils-plcrate open-plc-utils-hpavkeys 
+PACKAGES += -ppp -ppp-mod-pppoe
 
-VERSION = 21.02-SNAPSHOT
+VERSION = 21.02.0-rc1
 
 all: images
 
