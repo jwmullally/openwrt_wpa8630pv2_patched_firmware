@@ -1,5 +1,5 @@
---- tplink-safeloader.c.old
-+++ tplink-safeloader.c
+--- a/tools/firmware-utils/src/tplink-safeloader.c
++++ b/tools/firmware-utils/src/tplink-safeloader.c
 @@ -1621,8 +1621,9 @@
  		.id     = "TL-WPA8630P-V2.0-EU",
  		.vendor = "",

@@ -1,0 +1,271 @@
+From 45c839b5ce95638272b72cc13ecbbb3b3e892a27 Mon Sep 17 00:00:00 2001
+From: Joe Mullally <jwmullally@gmail.com>
+Date: Mon, 30 Aug 2021 22:35:05 +0100
+Subject: [PATCH] ath79: Move TPLink WPA8630Pv2 to ath79-tiny target
+
+These devices only have 6MiB available for firmware, which is not
+enough for recent release images, so move these to the tiny target.
+
+Note for users sysupgrading from the previous ath79-generic snapshot
+images:
+
+The tiny target kernel has a 4Kb flash erase block size instead
+of the generic target's 64kb. This means the JFFS2 overlay partition
+containing settings must be reformatted with the new block size or else
+there will be data corruption.
+
+To do this, backup your settings before upgrading, then during the
+sysupgrade, de-select "Keep Settings". On the CLI, use "sysupgrade -n".
+
+If you forget to do this and your system becomes unstable after
+upgrading, you can do this to format the partition and recover:
+
+* Reboot
+* Press RESET when Power LED blinks during boot to enter Failsafe mode
+* SSH to 192.168.1.1
+* Run "firstboot" and reboot
+
+Signed-off-by: Joe Mullally <jwmullally@gmail.com>
+---
+ .../generic/base-files/etc/board.d/01_leds    |  5 +--
+ .../generic/base-files/etc/board.d/02_network |  5 +--
+ .../etc/hotplug.d/firmware/11-ath10k-caldata  |  5 +--
+ target/linux/ath79/image/generic-tp-link.mk   | 30 ----------------
+ target/linux/ath79/image/tiny-tp-link.mk      | 35 +++++++++++++++++++
+ .../ath79/tiny/base-files/etc/board.d/01_leds |  5 +++
+ .../tiny/base-files/etc/board.d/02_network    |  7 ++++
+ .../base-files/etc/board.d/05_compat-version  | 20 +++++++++++
+ .../etc/hotplug.d/firmware/11-ath10k-caldata  | 25 +++++++++++++
+ 9 files changed, 95 insertions(+), 42 deletions(-)
+ create mode 100644 target/linux/ath79/tiny/base-files/etc/board.d/05_compat-version
+ create mode 100644 target/linux/ath79/tiny/base-files/etc/hotplug.d/firmware/11-ath10k-caldata
+
+diff --git a/target/linux/ath79/generic/base-files/etc/board.d/01_leds b/target/linux/ath79/generic/base-files/etc/board.d/01_leds
+index 3031b4703b..c550fada1d 100755
+--- a/target/linux/ath79/generic/base-files/etc/board.d/01_leds
++++ b/target/linux/ath79/generic/base-files/etc/board.d/01_leds
+@@ -347,10 +347,7 @@ tplink,tl-mr6400-v1)
+ 	ucidef_set_led_netdev "wan" "WAN" "white:wan" "eth1"
+ 	ucidef_set_led_netdev "4g" "4G" "white:4g" "usb0"
+ 	;;
+-tplink,tl-wpa8630-v1|\
+-tplink,tl-wpa8630p-v2-int|\
+-tplink,tl-wpa8630p-v2.0-eu|\
+-tplink,tl-wpa8630p-v2.1-eu)
++tplink,tl-wpa8630-v1)
+ 	ucidef_set_led_switch "lan" "LAN" "green:lan" "switch0" "0x3c"
+ 	;;
+ tplink,tl-wr842n-v2)
+diff --git a/target/linux/ath79/generic/base-files/etc/board.d/02_network b/target/linux/ath79/generic/base-files/etc/board.d/02_network
+index d4f53e7dae..a83bed3da7 100755
+--- a/target/linux/ath79/generic/base-files/etc/board.d/02_network
++++ b/target/linux/ath79/generic/base-files/etc/board.d/02_network
+@@ -381,10 +381,7 @@ ath79_setup_interfaces()
+ 		ucidef_add_switch "switch0" \
+ 			"0@eth0" "1:lan:1" "2:lan:3" "3:lan:2"
+ 		;;
+-	tplink,tl-wpa8630-v1|\
+-	tplink,tl-wpa8630p-v2-int|\
+-	tplink,tl-wpa8630p-v2.0-eu|\
+-	tplink,tl-wpa8630p-v2.1-eu)
++	tplink,tl-wpa8630-v1)
+ 		# port 5 (internal) is the power-line port
+ 		ucidef_add_switch "switch0" \
+ 			"0@eth0" "2:lan:3" "3:lan:2" "4:lan:1" "5:lan:4"
+diff --git a/target/linux/ath79/generic/base-files/etc/hotplug.d/firmware/11-ath10k-caldata b/target/linux/ath79/generic/base-files/etc/hotplug.d/firmware/11-ath10k-caldata
+index 14103a7310..7fe130ba1b 100644
+--- a/target/linux/ath79/generic/base-files/etc/hotplug.d/firmware/11-ath10k-caldata
++++ b/target/linux/ath79/generic/base-files/etc/hotplug.d/firmware/11-ath10k-caldata
+@@ -230,10 +230,7 @@ case "$FIRMWARE" in
+ 		;;
+ 	tplink,eap225-outdoor-v1|\
+ 	tplink,eap225-v3|\
+-	tplink,eap225-wall-v2|\
+-	tplink,tl-wpa8630p-v2-int|\
+-	tplink,tl-wpa8630p-v2.0-eu|\
+-	tplink,tl-wpa8630p-v2.1-eu)
++	tplink,eap225-wall-v2)
+ 		caldata_extract "art" 0x5000 0x2f20
+ 		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary info 0x8) +1)
+ 		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
+diff --git a/target/linux/ath79/image/generic-tp-link.mk b/target/linux/ath79/image/generic-tp-link.mk
+index be6aa06b55..f2dafe2593 100644
+--- a/target/linux/ath79/image/generic-tp-link.mk
++++ b/target/linux/ath79/image/generic-tp-link.mk
+@@ -587,36 +587,6 @@ define Device/tplink_tl-wpa8630-v1
+ endef
+ TARGET_DEVICES += tplink_tl-wpa8630-v1
+ 
+-define Device/tplink_tl-wpa8630p-v2
+-  $(Device/tplink-safeloader)
+-  SOC := qca9563
+-  DEVICE_MODEL := TL-WPA8630P
+-  IMAGE_SIZE := 6016k
+-  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
+-endef
+-
+-define Device/tplink_tl-wpa8630p-v2-int
+-  $(Device/tplink_tl-wpa8630p-v2)
+-  DEVICE_VARIANT := v2 (Int.)
+-  TPLINK_BOARD_ID := TL-WPA8630P-V2-INT
+-endef
+-TARGET_DEVICES += tplink_tl-wpa8630p-v2-int
+-
+-define Device/tplink_tl-wpa8630p-v2.0-eu
+-  $(Device/tplink_tl-wpa8630p-v2)
+-  DEVICE_VARIANT := v2.0 (EU)
+-  TPLINK_BOARD_ID := TL-WPA8630P-V2.0-EU
+-  SUPPORTED_DEVICES += tplink,tl-wpa8630p-v2-eu
+-endef
+-TARGET_DEVICES += tplink_tl-wpa8630p-v2.0-eu
+-
+-define Device/tplink_tl-wpa8630p-v2.1-eu
+-  $(Device/tplink_tl-wpa8630p-v2)
+-  DEVICE_VARIANT := v2.1 (EU)
+-  TPLINK_BOARD_ID := TL-WPA8630P-V2.1-EU
+-endef
+-TARGET_DEVICES += tplink_tl-wpa8630p-v2.1-eu
+-
+ define Device/tplink_tl-wr1043nd-v1
+   $(Device/tplink-8m)
+   SOC := ar9132
+diff --git a/target/linux/ath79/image/tiny-tp-link.mk b/target/linux/ath79/image/tiny-tp-link.mk
+index c918c6baa6..2110f08b52 100644
+--- a/target/linux/ath79/image/tiny-tp-link.mk
++++ b/target/linux/ath79/image/tiny-tp-link.mk
+@@ -223,6 +223,41 @@ define Device/tplink_tl-wa901nd-v5
+ endef
+ TARGET_DEVICES += tplink_tl-wa901nd-v5
+ 
++define Device/tplink_tl-wpa8630p-v2
++  $(Device/tplink-safeloader)
++  SOC := qca9563
++  DEVICE_MODEL := TL-WPA8630P
++  IMAGE_SIZE := 6016k
++  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9888-ct
++  DEVICE_COMPAT_VERSION := 2.0
++  DEVICE_COMPAT_MESSAGE := The flash erase blocksize has changed to 4k from the 64k in previous versions, \
++    so the JFFS2 settings partition MUST be reformatted to avoid data corruption. \
++    Backup your settings before upgrading, then during sysupgrade, \
++    de-select "Keep settings" and select "Force" to continue (equivilant to "sysupgrade -n -F").
++endef
++
++define Device/tplink_tl-wpa8630p-v2-int
++  $(Device/tplink_tl-wpa8630p-v2)
++  DEVICE_VARIANT := v2 (Int.)
++  TPLINK_BOARD_ID := TL-WPA8630P-V2-INT
++endef
++TARGET_DEVICES += tplink_tl-wpa8630p-v2-int
++
++define Device/tplink_tl-wpa8630p-v2.0-eu
++  $(Device/tplink_tl-wpa8630p-v2)
++  DEVICE_VARIANT := v2.0 (EU)
++  TPLINK_BOARD_ID := TL-WPA8630P-V2.0-EU
++  SUPPORTED_DEVICES += tplink,tl-wpa8630p-v2-eu
++endef
++TARGET_DEVICES += tplink_tl-wpa8630p-v2.0-eu
++
++define Device/tplink_tl-wpa8630p-v2.1-eu
++  $(Device/tplink_tl-wpa8630p-v2)
++  DEVICE_VARIANT := v2.1 (EU)
++  TPLINK_BOARD_ID := TL-WPA8630P-V2.1-EU
++endef
++TARGET_DEVICES += tplink_tl-wpa8630p-v2.1-eu
++
+ define Device/tplink_tl-wr703n
+   $(Device/tplink-4mlzma)
+   SOC := ar9331
+diff --git a/target/linux/ath79/tiny/base-files/etc/board.d/01_leds b/target/linux/ath79/tiny/base-files/etc/board.d/01_leds
+index f0b4acf066..aeac6e60e1 100755
+--- a/target/linux/ath79/tiny/base-files/etc/board.d/01_leds
++++ b/target/linux/ath79/tiny/base-files/etc/board.d/01_leds
+@@ -94,6 +94,11 @@ tplink,tl-wa850re-v2)
+ 	ucidef_set_led_rssi "rssimediumhigh" "RSSIMEDIUMHIGH" "blue:signal4" "wlan0" "60" "100"
+ 	ucidef_set_led_rssi "rssihigh" "RSSIHIGH" "blue:signal5" "wlan0" "80" "100"
+ 	;;
++tplink,tl-wpa8630p-v2-int|\
++tplink,tl-wpa8630p-v2.0-eu|\
++tplink,tl-wpa8630p-v2.1-eu)
++	ucidef_set_led_switch "lan" "LAN" "green:lan" "switch0" "0x3c"
++	;;
+ tplink,tl-wr940n-v3|\
+ tplink,tl-wr940n-v4|\
+ tplink,tl-wr941nd-v6)
+diff --git a/target/linux/ath79/tiny/base-files/etc/board.d/02_network b/target/linux/ath79/tiny/base-files/etc/board.d/02_network
+index cca6352023..062b6e70c0 100755
+--- a/target/linux/ath79/tiny/base-files/etc/board.d/02_network
++++ b/target/linux/ath79/tiny/base-files/etc/board.d/02_network
+@@ -83,6 +83,13 @@ ath79_setup_interfaces()
+ 		ucidef_add_switch "switch0" \
+ 			"0@eth0" "1:lan:4" "2:lan:1" "3:lan:2" "4:lan:3"
+ 		;;
++	tplink,tl-wpa8630p-v2-int|\
++	tplink,tl-wpa8630p-v2.0-eu|\
++	tplink,tl-wpa8630p-v2.1-eu)
++		# port 5 (internal) is the power-line port
++		ucidef_add_switch "switch0" \
++		"0@eth0" "2:lan:3" "3:lan:2" "4:lan:1" "5:lan:4"
++		;;
+ 	tplink,tl-wr941-v2)
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
+ 		;;
+diff --git a/target/linux/ath79/tiny/base-files/etc/board.d/05_compat-version b/target/linux/ath79/tiny/base-files/etc/board.d/05_compat-version
+new file mode 100644
+index 0000000000..b6c2ae48f7
+--- /dev/null
++++ b/target/linux/ath79/tiny/base-files/etc/board.d/05_compat-version
+@@ -0,0 +1,20 @@
++#
++# Copyright (C) 2020 OpenWrt.org
++#
++
++. /lib/functions.sh
++. /lib/functions/uci-defaults.sh
++
++board_config_update
++
++case "$(board_name)" in
++	tplink,tl-wpa8630p-v2-int|\
++	tplink,tl-wpa8630p-v2.0-eu|\
++	tplink,tl-wpa8630p-v2.1-eu)
++		ucidef_set_compat_version "2.0"
++		;;
++esac
++
++board_config_flush
++
++exit 0
+diff --git a/target/linux/ath79/tiny/base-files/etc/hotplug.d/firmware/11-ath10k-caldata b/target/linux/ath79/tiny/base-files/etc/hotplug.d/firmware/11-ath10k-caldata
+new file mode 100644
+index 0000000000..8e3e142ec9
+--- /dev/null
++++ b/target/linux/ath79/tiny/base-files/etc/hotplug.d/firmware/11-ath10k-caldata
+@@ -0,0 +1,25 @@
++#!/bin/sh
++
++[ -e /lib/firmware/$FIRMWARE ] && exit 0
++
++. /lib/functions/caldata.sh
++
++board=$(board_name)
++
++case "$FIRMWARE" in
++"ath10k/pre-cal-pci-0000:00:00.0.bin")
++	case $board in
++	tplink,tl-wpa8630p-v2-int|\
++	tplink,tl-wpa8630p-v2.0-eu|\
++	tplink,tl-wpa8630p-v2.1-eu)
++		caldata_extract "art" 0x5000 0x2f20
++		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_binary info 0x8) 1)
++		ln -sf /lib/firmware/ath10k/pre-cal-pci-0000\:00\:00.0.bin \
++			/lib/firmware/ath10k/QCA9888/hw2.0/board.bin
++		;;
++	esac
++	;;
++*)
++	exit 1
++	;;
++esac
+-- 
+2.35.1
+
