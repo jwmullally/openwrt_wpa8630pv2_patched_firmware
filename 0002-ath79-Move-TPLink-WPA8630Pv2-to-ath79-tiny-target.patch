@@ -210,7 +210,7 @@ index cca6352023..062b6e70c0 100755
  		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4" "wan"
  		;;
 diff --git a/target/linux/ath79/tiny/base-files/etc/board.d/05_compat-version b/target/linux/ath79/tiny/base-files/etc/board.d/05_compat-version
-new file mode 100644
+new file mode 100755
 index 0000000000..b6c2ae48f7
 --- /dev/null
 +++ b/target/linux/ath79/tiny/base-files/etc/board.d/05_compat-version
