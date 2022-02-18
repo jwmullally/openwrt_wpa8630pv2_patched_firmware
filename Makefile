@@ -8,7 +8,7 @@
 
 ALL_CURL_OPTS := $(CURL_OPTS) -L --fail --create-dirs
 
-VERSION := 21.02.1
+VERSION := 21.02.2
 BOARD := ath79
 SUBTARGET := tiny
 SOC := qca9563
