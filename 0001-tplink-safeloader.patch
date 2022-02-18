@@ -1,6 +1,6 @@
 --- a/tools/firmware-utils/src/tplink-safeloader.c
 +++ b/tools/firmware-utils/src/tplink-safeloader.c
-@@ -1621,8 +1621,9 @@
+@@ -1681,8 +1681,9 @@
  		.id     = "TL-WPA8630P-V2.0-EU",
  		.vendor = "",
  		.support_list =
@@ -10,7 +10,7 @@
  		.part_trail = 0x00,
  		.soft_ver = NULL,
  
-@@ -1656,8 +1657,10 @@
+@@ -1716,8 +1717,10 @@
  		.id     = "TL-WPA8630P-V2-INT",
  		.vendor = "",
  		.support_list =

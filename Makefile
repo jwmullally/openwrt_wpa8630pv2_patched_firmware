@@ -73,4 +73,4 @@ images: $(BUILDER) linux-sources
 
 
 clean:
-	rm -rf openwrt-imagebuilder-* linux-sources
+	rm -rf openwrt-imagebuilder-* linux-sources linux-sources.tmp
