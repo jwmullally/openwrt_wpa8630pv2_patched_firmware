@@ -34,12 +34,12 @@ $(BUILDER): $(BUILDER).tar.xz
 	tar -xf $(BUILDER).tar.xz
 	
 	# Fetch firmware utility sources to apply patches
-	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v$(VERSION);a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c" -o $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c
-	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v$(VERSION);a=blob_plain;f=tools/firmware-utils/src/md5.h" -o $(BUILDER)/tools/firmware-utils/src/md5.h
+	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.2;a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c" -o $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c
+	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.2;a=blob_plain;f=tools/firmware-utils/src/md5.h" -o $(BUILDER)/tools/firmware-utils/src/md5.h
 	
 	# Apply all patches
-	cd $(BUILDER) && patch -p1 < ../0001-tplink-safeloader.patch
-	cd $(BUILDER) && patch -p1 < ../0002-ath79-Move-TPLink-WPA8630Pv2-to-ath79-tiny-target.patch
+	cd $(BUILDER) && patch --no-backup-if-mismatch -p1 < ../0001-tplink-safeloader.patch
+	cd $(BUILDER) && patch --no-backup-if-mismatch -p1 < ../0002-ath79-Move-TPLink-WPA8630Pv2-to-ath79-tiny-target.patch
 	gcc -Wall -o $(TOPDIR)/staging_dir/host/bin/tplink-safeloader $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c -lcrypto -lssl
 	
 	# Regenerate .targetinfo
@@ -53,6 +53,7 @@ linux-sources: $(BUILDER)
 	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/gpio/gpio.h?h=v$(LINUX_VERSION)" -o linux-sources.tmp/include/dt-bindings/gpio/gpio.h
 	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/input/input.h?h=v$(LINUX_VERSION)" -o linux-sources.tmp/include/dt-bindings/input/input.h
 	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/uapi/linux/input-event-codes.h?h=v$(LINUX_VERSION)" -o linux-sources.tmp/include/dt-bindings/input/linux-event-codes.h
+	rm -rf linux-sources
 	mv -T linux-sources.tmp linux-sources
 
 
