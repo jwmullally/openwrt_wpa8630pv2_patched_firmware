@@ -1,26 +1,19 @@
 ## Overview
 
-This repository contains a simple patch to enable the [OpenWRT firmware for the TP-Link TL-WPA8630P v2](https://openwrt.org/toh/tp-link/tl-wpa8630p_v2) to be flashed to the following devices which are not officially supported. It also includes [this upcoming patch](https://github.com/openwrt/openwrt/pull/4500) to move the device from ath79-generic to ath79-tiny to support LuCi builds and have 1MB free space on the device.
+This repository contains a simple patch to enable the [OpenWRT firmware for the TP-Link TL-WPA8630P v2](https://openwrt.org/toh/tp-link/tl-wpa8630p_v2) to be flashed to the following devices which are not officially supported.
 
 It builds the images using the [OpenWRT ImageBuilder](https://openwrt.org/docs/guide-user/additional-software/imagebuilder). One advantage of this over from-source custom builds is that the kernel is the same as the official builds, so all kmods from the standard repos are installable.
 
 The only difference between these firmwares and the offical firmwares is the extra model version in the firmware file's SupportList required to perform the upgrade. After installing, the device will be identical to the official OpenWRT image (i.e. `v2-int`, `v2.0-eu`, `v2.1-eu`). You can upgrade using the official sysupgrade firmwares matching the patched firmware. If you are reverting to stock later, make sure to use the exact same stock firmware version as you originally upgraded from. 
 
-**NOTE 2022 Q1: Wait until the Pull Request above is merged before sysupgrading back to the official images, as the official images are still too large.**
-
 
 ## Supported versions 
 
-| Hardware Version | Stock Firmware Version | Patched OpenWRT Firmware |
-| --- | --- | --- |
-| `Model: TL-WPA8630P(AU) v2.0` | All | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin` |
-| `Model: TL-WPA8630P(AU) v2.1` | All | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin` |
-| `Model: TL-WPA8630P(DE) v2.0` | All | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin` |
-| `Model: TL-WPA8630P(EU) v2.0` | All | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin` |
-| `Model: TL-WPA8630P(EU) v2.1` | All | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2.1-eu-squashfs-factory.bin` |
-| `Model: TL-WPA8630(CA) Ver: 2.0` | All | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin` |
-| `Model: TL-WPA8630(US) Ver: 2.0` | `2.0.1 Build 20171011 Rel.33916` | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin` |
-| `Model: TL-WPA8630(EU) Ver: 2.0` | `2.0.2 Build 20171017 Rel.43480` | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin` |
+| Hardware Version | Stock Firmware Version | Patched OpenWRT Firmware | Sysupgrade to official OpenWRT official image after install |
+| --- | --- | --- | --- |
+| `Model: TL-WPA8630(CA) Ver: 2.0` | All | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin` | `tplink_tl-wpa8630p-v2-int` |
+| `Model: TL-WPA8630(US) Ver: 2.0` | `2.0.1 Build 20171011 Rel.33916` | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2-int-squashfs-factory.bin` | `tplink_tl-wpa8630p-v2-int` |
+| `Model: TL-WPA8630(EU) Ver: 2.0` | `2.0.2 Build 20171017 Rel.43480` | `openwrt-patch-ath79-tiny-tplink_tl-wpa8630p-v2.0-eu-squashfs-factory.bin` | `tplink_tl-wpa8630p-v2.0-eu` |
 
 **!!! ONLY INSTALL THESE FIRMWARES IF YOUR CURRENT HARDWARE AND FIRMWARE VERSIONS EXACTLY MATCHES THE ENTRY IN THIS TABLE !!!**
 
@@ -48,6 +41,8 @@ These are built using [this Github workflow](./.github/workflows/build_release_i
 Choose the correct file from the table above and follow the [standard installation instructions](https://openwrt.org/toh/tp-link/tl-wpa8630p_v2#oem_easy_installation).
 
 If you get "Wrong file" message during firmware upgrade, try renaming the file to something shorter like `openwrt-firmware.bin`.
+
+After installing, you should then sysupgrade to the corresponding official OpenWRT images and continue using those images as normal.
 
 
 ## Building

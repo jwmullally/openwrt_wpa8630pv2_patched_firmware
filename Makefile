@@ -8,12 +8,12 @@
 
 ALL_CURL_OPTS := $(CURL_OPTS) -L --fail --create-dirs
 
-VERSION := 21.02.2
+VERSION := 21.02.3
 BOARD := ath79
 SUBTARGET := tiny
 SOC := qca9563
 BUILDER := openwrt-imagebuilder-$(VERSION)-$(BOARD)-$(SUBTARGET).Linux-x86_64
-PROFILES := tplink_tl-wpa8630p-v2.0-eu tplink_tl-wpa8630p-v2.1-eu tplink_tl-wpa8630p-v2-int
+PROFILES := tplink_tl-wpa8630p-v2.0-eu tplink_tl-wpa8630p-v2-int
 PACKAGES := luci
 EXTRA_IMAGE_NAME := patch
 
@@ -34,12 +34,11 @@ $(BUILDER): $(BUILDER).tar.xz
 	tar -xf $(BUILDER).tar.xz
 	
 	# Fetch firmware utility sources to apply patches
-	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.2;a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c" -o $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c
-	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.2;a=blob_plain;f=tools/firmware-utils/src/md5.h" -o $(BUILDER)/tools/firmware-utils/src/md5.h
+	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.3;a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c" -o $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c
+	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.3;a=blob_plain;f=tools/firmware-utils/src/md5.h" -o $(BUILDER)/tools/firmware-utils/src/md5.h
 	
 	# Apply all patches
-	cd $(BUILDER) && patch --no-backup-if-mismatch -p1 < ../0001-tplink-safeloader.patch
-	cd $(BUILDER) && patch --no-backup-if-mismatch -p1 < ../0002-ath79-Move-TPLink-WPA8630Pv2-to-ath79-tiny-target.patch
+	$(foreach file, $(sort $(wildcard patches/*.patch)), patch -d $(BUILDER) --posix -p1 < $(file);)
 	gcc -Wall -o $(TOPDIR)/staging_dir/host/bin/tplink-safeloader $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c -lcrypto -lssl
 	
 	# Regenerate .targetinfo
