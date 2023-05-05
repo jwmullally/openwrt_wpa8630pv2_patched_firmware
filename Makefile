@@ -13,64 +13,69 @@ BOARD := ath79
 SUBTARGET := tiny
 SOC := qca9563
 BUILDER := openwrt-imagebuilder-$(VERSION)-$(BOARD)-$(SUBTARGET).Linux-x86_64
-PROFILES := tplink_tl-wpa8630p-v2.0-eu tplink_tl-wpa8630p-v2-int
+PROFILES := tplink_tl-wpa8630p-v2.0-eu tplink_tl-wpa8630p-v2.1-eu tplink_tl-wpa8630p-v2-int 
 PACKAGES := luci
 EXTRA_IMAGE_NAME := patch
 
-TOPDIR := $(CURDIR)/$(BUILDER)
+BUILD_DIR := build
+TOPDIR := $(CURDIR)/$(BUILD_DIR)/$(BUILDER)
 KDIR := $(TOPDIR)/build_dir/target-mips_24kc_musl/linux-$(BOARD)_$(SUBTARGET)
 PATH := $(TOPDIR)/staging_dir/host/bin:$(PATH)
-LINUX_VERSION = $(shell sed -n -e '/Linux-Version: / {s/Linux-Version: //p;q}' $(BUILDER)/.targetinfo)
+LINUX_VERSION = $(shell sed -n -e '/Linux-Version: / {s/Linux-Version: //p;q}' $(BUILD_DIR)/$(BUILDER)/.targetinfo)
+OUTPUT_DIR := $(BUILD_DIR)/$(BUILDER)/bin/targets/$(BOARD)/$(SUBTARGET)
 
 
 all: images
 
 
+$(BUILD_DIR)/downloads:
+	mkdir -p $(BUILD_DIR)/downloads.tmp
+	cd $(BUILD_DIR)/downloads.tmp && curl $(ALL_CURL_OPTS) -O https://downloads.openwrt.org/releases/$(VERSION)/targets/$(BOARD)/$(SUBTARGET)/$(BUILDER).tar.xz
+	mv $(BUILD_DIR)/downloads.tmp $(BUILD_DIR)/downloads
 $(BUILDER).tar.xz:
-	curl $(ALL_CURL_OPTS) -O https://downloads.openwrt.org/releases/$(VERSION)/targets/$(BOARD)/$(SUBTARGET)/$(BUILDER).tar.xz
 
 
-$(BUILDER): $(BUILDER).tar.xz
-	tar -xf $(BUILDER).tar.xz
+$(BUILD_DIR)/$(BUILDER): $(BUILD_DIR)/downloads
+	cd $(BUILD_DIR) && tar -xf downloads/$(BUILDER).tar.xz
 	
 	# Fetch firmware utility sources to apply patches
-	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.3;a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c" -o $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c
-	curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.3;a=blob_plain;f=tools/firmware-utils/src/md5.h" -o $(BUILDER)/tools/firmware-utils/src/md5.h
+	cd $(BUILD_DIR)/$(BUILDER) && curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.3;a=blob_plain;f=tools/firmware-utils/src/tplink-safeloader.c" -o tools/firmware-utils/src/tplink-safeloader.c
+	cd $(BUILD_DIR)/$(BUILDER) && curl $(ALL_CURL_OPTS) "https://git.openwrt.org/?p=openwrt/openwrt.git;hb=refs/tags/v21.02.3;a=blob_plain;f=tools/firmware-utils/src/md5.h" -o tools/firmware-utils/src/md5.h
 	
 	# Apply all patches
-	$(foreach file, $(sort $(wildcard patches/*.patch)), patch -d $(BUILDER) --posix -p1 < $(file);)
-	gcc -Wall -o $(TOPDIR)/staging_dir/host/bin/tplink-safeloader $(BUILDER)/tools/firmware-utils/src/tplink-safeloader.c -lcrypto -lssl
+	$(foreach file, $(sort $(wildcard patches/*.patch)), patch -d $(BUILD_DIR)/$(BUILDER) --posix -p1 < $(file);)
+	
+	# Build tools
+	cd $(BUILD_DIR)/$(BUILDER) && gcc -Wall -o staging_dir/host/bin/tplink-safeloader tools/firmware-utils/src/tplink-safeloader.c -lcrypto -lssl
+	cd $(BUILD_DIR)/$(BUILDER) && ln -sf /usr/bin/cpp staging_dir/host/bin/mips-openwrt-linux-musl-cpp
 	
 	# Regenerate .targetinfo
-	cd $(BUILDER) && make -f include/toplevel.mk TOPDIR="$(TOPDIR)" prepare-tmpinfo || true
-	cp -f $(BUILDER)/tmp/.targetinfo $(BUILDER)/.targetinfo
+	cd $(BUILD_DIR)/$(BUILDER) && make -f include/toplevel.mk TOPDIR="$(TOPDIR)" prepare-tmpinfo || true
+	cd $(BUILD_DIR)/$(BUILDER) && cp -f tmp/.targetinfo .targetinfo
 
 
-linux-sources: $(BUILDER)
-	# Fetch DTS includes and other kernel source files
-	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/clock/ath79-clk.h?h=v$(LINUX_VERSION)" -o linux-sources.tmp/include/dt-bindings/clock/ath79-clk.h
-	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/gpio/gpio.h?h=v$(LINUX_VERSION)" -o linux-sources.tmp/include/dt-bindings/gpio/gpio.h
-	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/input/input.h?h=v$(LINUX_VERSION)" -o linux-sources.tmp/include/dt-bindings/input/input.h
-	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/uapi/linux/input-event-codes.h?h=v$(LINUX_VERSION)" -o linux-sources.tmp/include/dt-bindings/input/linux-event-codes.h
-	rm -rf linux-sources
-	mv -T linux-sources.tmp linux-sources
+$(BUILD_DIR)/linux-include: $(BUILD_DIR)/$(BUILDER)
+	# Fetch DTS include dependencies
+	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/clock/ath79-clk.h?h=v$(LINUX_VERSION)" -o $(KDIR)/linux-$(LINUX_VERSION)/include/dt-bindings/clock/ath79-clk.h
+	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/gpio/gpio.h?h=v$(LINUX_VERSION)" -o $(KDIR)/linux-$(LINUX_VERSION)/include/dt-bindings/gpio/gpio.h
+	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/dt-bindings/input/input.h?h=v$(LINUX_VERSION)" -o $(KDIR)/linux-$(LINUX_VERSION)/include/dt-bindings/input/input.h
+	curl $(ALL_CURL_OPTS) "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/plain/include/uapi/linux/input-event-codes.h?h=v$(LINUX_VERSION)" -o $(KDIR)/linux-$(LINUX_VERSION)/include/dt-bindings/input/linux-event-codes.h
+	touch $(BUILD_DIR)/linux-include
 
 
-images: $(BUILDER) linux-sources
+images: $(BUILD_DIR)/$(BUILDER) $(BUILD_DIR)/linux-include
 	# Build this device's DTB and firmware kernel image. Uses the official kernel build as a base.
-	ln -sf /usr/bin/cpp $(BUILDER)/staging_dir/host/bin/mips-openwrt-linux-musl-cpp
-	ln -sf ../../../../../linux-sources/include $(KDIR)/linux-$(LINUX_VERSION)/include
-	cd $(BUILDER) && $(foreach PROFILE,$(PROFILES),\
+	cd $(BUILD_DIR)/$(BUILDER) && $(foreach PROFILE,$(PROFILES),\
 	    env PATH=$(PATH) make --trace -C target/linux/$(BOARD)/image $(KDIR)/$(PROFILE)-kernel.bin TOPDIR="$(TOPDIR)" INCLUDE_DIR="$(TOPDIR)/include" TARGET_BUILD=1 BOARD="$(BOARD)" SUBTARGET="$(SUBTARGET)" PROFILE="$(PROFILE)" DEVICE_DTS="$(SOC)_$(PROFILE)"\
 	;)
 	
 	# Use ImageBuilder as normal
-	cd $(BUILDER) && $(foreach PROFILE,$(PROFILES),\
+	cd $(BUILD_DIR)/$(BUILDER) && $(foreach PROFILE,$(PROFILES),\
 	    make image PROFILE="$(PROFILE)" EXTRA_IMAGE_NAME="$(EXTRA_IMAGE_NAME)" PACKAGES="$(PACKAGES)" FILES="$(TOPDIR)/target/linux/$(BOARD)/$(SUBTARGET)/base-files/"\
 	;)
-	cat $(BUILDER)/bin/targets/$(BOARD)/$(SUBTARGET)/sha256sums
-	ls -hs $(BUILDER)/bin/targets/$(BOARD)/$(SUBTARGET)/openwrt-*.bin
+	cat $(OUTPUT_DIR)/sha256sums
+	ls -hs $(OUTPUT_DIR)
 
 
 clean:
-	rm -rf openwrt-imagebuilder-* linux-sources linux-sources.tmp
+	rm -rf build
