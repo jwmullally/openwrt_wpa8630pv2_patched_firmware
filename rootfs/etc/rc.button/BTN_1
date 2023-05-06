@@ -1,0 +1,19 @@
+#!/bin/sh
+ 
+[ "${ACTION}" = "released" ] || exit 0
+ 
+. /lib/functions/system.sh
+ 
+plc_mac="$(macaddr_add $(get_mac_label) +2)"
+plc_interface="br-lan"
+ 
+if [ "$SEEN" -ge 1 -a "$SEEN" -le 4 ]; then
+    logger -p user.notice -t button "Sending 'join' command to Powerline PLC"
+    plctool -i "$plc_interface" -B join "$plc_mac"
+elif [ "$SEEN" -ge 8 ]; then
+    logger -p user.notice -t button "Sending 'leave' command to Powerline PLC"
+    plctool -i "$plc_interface" -B leave "$plc_mac"
+fi
+ 
+return 0
+EOF

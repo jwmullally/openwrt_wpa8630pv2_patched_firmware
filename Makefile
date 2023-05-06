@@ -8,13 +8,13 @@
 
 ALL_CURL_OPTS := $(CURL_OPTS) -L --fail --create-dirs
 
-VERSION := 21.02.3
+VERSION := 22.03.5
 BOARD := ath79
 SUBTARGET := tiny
 SOC := qca9563
 BUILDER := openwrt-imagebuilder-$(VERSION)-$(BOARD)-$(SUBTARGET).Linux-x86_64
 PROFILES := tplink_tl-wpa8630p-v2.0-eu tplink_tl-wpa8630p-v2.1-eu tplink_tl-wpa8630p-v2-int 
-PACKAGES := luci
+PACKAGES := luci wpad-basic luci-app-commands open-plc-utils-plctool open-plc-utils-plcrate open-plc-utils-hpavkeys -libustream-wolfssl -wpad-basic-wolfssl -ca-certificates -ppp -ppp-mod-pppoe -luci-proto-ppp
 EXTRA_IMAGE_NAME := patch
 
 BUILD_DIR := build
@@ -71,7 +71,7 @@ images: $(BUILD_DIR)/$(BUILDER) $(BUILD_DIR)/linux-include
 	
 	# Use ImageBuilder as normal
 	cd $(BUILD_DIR)/$(BUILDER) && $(foreach PROFILE,$(PROFILES),\
-	    make image PROFILE="$(PROFILE)" EXTRA_IMAGE_NAME="$(EXTRA_IMAGE_NAME)" PACKAGES="$(PACKAGES)" FILES="$(TOPDIR)/target/linux/$(BOARD)/$(SUBTARGET)/base-files/"\
+	    make image PROFILE="$(PROFILE)" EXTRA_IMAGE_NAME="$(EXTRA_IMAGE_NAME)" PACKAGES="$(PACKAGES)" FILES="../../rootfs/"\
 	;)
 	cat $(OUTPUT_DIR)/sha256sums
 	ls -hs $(OUTPUT_DIR)

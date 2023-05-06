@@ -1,0 +1,28 @@
+#!/bin/sh
+
+. /lib/functions/system.sh
+plc_mac="$(macaddr_add $(get_mac_label) +2)"
+plc_interface="br-lan"
+ 
+uci add luci command
+uci set luci.@command[-1].name="Powerline Status"
+uci set luci.@command[-1].command="plctool -i $plc_interface -m $plc_mac"
+ 
+uci add luci command
+uci set luci.@command[-1].name="Powerline Join"
+uci set luci.@command[-1].command="plctool -i $plc_interface -B join $plc_mac"
+ 
+uci add luci command
+uci set luci.@command[-1].name="Powerline Leave"
+uci set luci.@command[-1].command="plctool -i $plc_interface -B leave $plc_mac"
+ 
+uci add luci command
+uci set luci.@command[-1].name="Powerline Rates"
+uci set luci.@command[-1].command="plcrate -i $plc_interface"
+ 
+uci add luci command
+uci set luci.@command[-1].name="Powerline Set NMK"
+uci set luci.@command[-1].command="powerline-set-nmk $plc_interface $plc_mac"
+uci set luci.@command[-1].param="1"
+ 
+uci commit luci

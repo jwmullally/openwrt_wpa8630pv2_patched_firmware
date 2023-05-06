@@ -1,0 +1,16 @@
+#!/bin/sh
+ 
+[ "${ACTION}" = "released" ] || exit 0
+ 
+control="/sys/class/gpio/tp-link:led:control/value"
+ 
+if [ "$(cat ${control})" = "0" ]; then
+    logger -p user.notice -t button "Enabling LEDs"
+    echo "1" > "$control"
+else
+    logger -p user.notice -t button "Disabling LEDs"
+    echo "0" > "$control"
+fi
+ 
+return 0
+EOF

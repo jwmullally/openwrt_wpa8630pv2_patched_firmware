@@ -1,0 +1,16 @@
+When using Image Builder, don't force rebuild of kernel loaders.
+
+Reverts
+https://git.openwrt.org/?p=openwrt/openwrt.git;a=commitdiff;h=a01d23e755ba46f41e667d558d82d4871d7f5450
+
+--- a/include/image.mk
++++ b/include/image.mk
+@@ -524,7 +524,7 @@
+ define Device/Build/compile
+   $$(_COMPILE_TARGET): $(KDIR)/$(1)
+   $(eval $(call Device/Export,$(KDIR)/$(1)))
+-  $(KDIR)/$(1): FORCE
++  $(KDIR)/$(1):
+ 	rm -f $(KDIR)/$(1)
+ 	$$(call concat_cmd,$(COMPILE/$(1)))
+ 

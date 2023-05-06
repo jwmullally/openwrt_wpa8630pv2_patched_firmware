@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Disable opkg https as no crypto libustream is installed
+sed -i 's/https:/http:/g' /etc/opkg/distfeeds.conf
