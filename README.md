@@ -1,18 +1,24 @@
 ## Overview
 
-This repository contains a simple patch to enable the [OpenWRT firmware for the TP-Link TL-WPA8630P v2](https://openwrt.org/toh/tp-link/tl-wpa8630p_v2) to be flashed to the following devices which are not officially supported.
+This repository contains tested builds of [OpenWRT firmware for the TP-Link TL-WPA8630P v2](https://openwrt.org/toh/tp-link/tl-wpa8630p_v2).
 
 It builds the images using the [OpenWRT ImageBuilder](https://openwrt.org/docs/guide-user/additional-software/imagebuilder). One advantage of this over from-source custom builds is that the kernel is the same as the official builds, so all kmods from the standard repos are installable.
 
-The only difference between these firmwares and the offical firmwares is the extra model version in the firmware file's SupportList required to perform the upgrade. After installing, the device will be identical to the official OpenWRT image (i.e. `v2-int`, `v2.0-eu`, `v2.1-eu`). You can upgrade using the official sysupgrade firmwares matching the patched firmware. If you are reverting to stock later, make sure to use the exact same stock firmware version as you originally upgraded from. 
+After installing, the device will be similar to the official OpenWRT image (i.e. `v2-int`, `v2.0-eu`, `v2.1-eu`). You can upgrade using the official sysupgrade firmwares matching the patched firmware. If you are reverting to stock later, make sure to use the exact same stock firmware version as you originally upgraded from. 
 
-## OpenWrt 22.03 builds
 
-This repository also provides safe and tested builds for OpenWrt 22.03 for the TL-WPA8630P v2. These are built using the OpenWrt ImageBuilder, so uses the official kernel builds and packages. The official OpenWrt 22.03 build no longer fits this device, so we manage that here by removing `wolfssl` (which removes WPA3 support) and `ppp`.
+## Changes compared to the official OpenWrt firmware
+
+* Extra non-P model versions in the firmware file's SupportList
+* WolfSSL removed to make the images fit (which removes WPA3 support)
+* PPP removed
+* opkg https disabled
+* PLC button scripts and commands from the wiki page
+
 
 ## Supported versions 
 
-This supports all devices described [here](https://openwrt.org/toh/tp-link/tl-wpa8630p_v2), in addition to the following:
+This supports all officially supported devices described [here](https://openwrt.org/toh/tp-link/tl-wpa8630p_v2), in addition to the following:
 
 | Hardware Version | Stock Firmware Version | Patched OpenWRT Firmware | Sysupgrade to official OpenWRT official image after install |
 | --- | --- | --- | --- |
