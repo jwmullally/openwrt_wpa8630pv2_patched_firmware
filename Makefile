@@ -8,13 +8,19 @@
 
 ALL_CURL_OPTS := $(CURL_OPTS) -L --fail --create-dirs
 
-VERSION := 22.03.5
+VERSION := 22.03.6
 BOARD := ath79
 SUBTARGET := tiny
 SOC := qca9563
 BUILDER := openwrt-imagebuilder-$(VERSION)-$(BOARD)-$(SUBTARGET).Linux-x86_64
 PROFILES := tplink_tl-wpa8630p-v2.0-eu tplink_tl-wpa8630p-v2.1-eu tplink_tl-wpa8630p-v2-int 
+
 PACKAGES := luci wpad-basic luci-app-commands open-plc-utils-plctool open-plc-utils-plcrate open-plc-utils-hpavkeys -libustream-wolfssl -wpad-basic-wolfssl -ca-certificates -ppp -ppp-mod-pppoe -luci-proto-ppp
+
+# v23.05 barely fits, but is almost unusable due to lack of space versus
+# functionality gained, I'd recommend sticking with v22.03 for now.
+#PACKAGES := luci -ca-certificates -ppp -ppp-mod-pppoe -luci-proto-ppp -uboot-envtools -ca-bundle -procd-seccomp
+
 EXTRA_IMAGE_NAME := patch
 
 BUILD_DIR := build
@@ -50,6 +56,7 @@ $(BUILD_DIR)/$(BUILDER): $(BUILD_DIR)/downloads
 	cd $(BUILD_DIR)/$(BUILDER) && ln -sf /usr/bin/cpp staging_dir/host/bin/mips-openwrt-linux-musl-cpp
 	
 	# Regenerate .targetinfo
+	cd $(BUILD_DIR)/$(BUILDER) && touch staging_dir/host/.prereq-build
 	cd $(BUILD_DIR)/$(BUILDER) && make -f include/toplevel.mk TOPDIR="$(TOPDIR)" prepare-tmpinfo || true
 	cd $(BUILD_DIR)/$(BUILDER) && cp -f tmp/.targetinfo .targetinfo
 
